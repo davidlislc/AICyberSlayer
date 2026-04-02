@@ -1,0 +1,91 @@
+# AICyberSlayer Agent Configuration
+# ─────────────────────────────────────────────────────────────────────────────
+# Sensitive values (passwords, tokens) should be provided via environment
+# variables rather than this file:
+#   KAFKA_SASL_PASSWORD   – Kafka SASL password
+#   SPLUNK_HEC_TOKEN      – Splunk HEC token
+#   ELASTIC_PASSWORD      – Elasticsearch password
+
+agent:
+  # Human-readable agent ID.  Defaults to the machine hostname if empty.
+  id: ""
+  # How often collected metrics are published (Go duration string).
+  flush_interval: 30s
+
+kafka:
+  # Bootstrap broker addresses (host:port).
+  brokers:
+    - "localhost:9092"
+  # Topic to publish events to.
+  topic: "aicyberslayer"
+  # Maximum messages per batch.
+  batch_size: 100
+  # Write timeout in seconds.
+  write_timeout_secs: 10
+
+  tls:
+    enabled: false
+    # cert_file: "/etc/aicyberslayer/kafka-client.crt"
+    # key_file:  "/etc/aicyberslayer/kafka-client.key"
+    # ca_file:   "/etc/aicyberslayer/kafka-ca.crt"
+
+  sasl:
+    enabled: false
+    mechanism: "PLAIN"   # PLAIN | SCRAM-SHA-256 | SCRAM-SHA-512
+    username: ""
+    # password: set via KAFKA_SASL_PASSWORD env var
+
+collector:
+  system:
+    enabled: true
+    # Set to false to skip per-process collection on resource-constrained hosts.
+    collect_processes: true
+
+  network:
+    enabled: true
+    collect_connections: true
+
+  forensics:
+    enabled: true
+    # Filesystem paths to monitor for create/write/remove/rename events.
+    watch_paths:
+      - "/etc"
+      - "/tmp"
+    collect_logins: true
+
+  webserver:
+    enabled: false
+    # Paths to nginx / Apache access logs to tail.
+    log_files:
+      - "/var/log/nginx/access.log"
+      # - "/var/log/apache2/access.log"
+    # "combined" (default) or "common"
+    format: "combined"
+
+# SIEM adapters are optional; all are disabled by default.
+siem:
+  splunk:
+    enabled: false
+    hec_url: "https://splunk.example.com:8088/services/collector/event"
+    # token: set via SPLUNK_HEC_TOKEN env var
+    index: "main"
+    insecure: false
+
+  elastic:
+    enabled: false
+    addresses:
+      - "https://elasticsearch.example.com:9200"
+    index: "aicyberslayer"
+    username: "elastic"
+    # password: set via ELASTIC_PASSWORD env var
+    insecure: false
+
+  syslog:
+    enabled: false
+    network: "tcp"          # tcp | udp
+    address: "siem.example.com:514"
+    protocol: "syslog"      # syslog | cef
+
+logging:
+  level: "info"    # debug | info | warn | error
+  format: "json"   # json | text

@@ -1,0 +1,23 @@
+# Binaries
+aicyberslayer-agent
+aicyberslayer-agent.exe
+aicyberslayer-agent-*
+
+# Go build cache
+/dist/
+/bin/
+
+# Test artifacts
+*.test
+*.out
+coverage.html
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
